@@ -4,6 +4,7 @@ import Login from "./components/authentication/Login";
 import WelcomePage from "./components/pages/WelcomePage";
 import { Route, Switch, Redirect } from "react-router-dom";
 import AuthContext from "./components/auth/AuthContext";
+import ProfilePage from "./components/pages/ProfilePage";
 
 function App() {
   const authctx = useContext(AuthContext)
@@ -19,12 +20,18 @@ function App() {
         <Route path="/login">
           <Login />
         </Route>
-       {isLoggedIn && <Route path="/Welcomepage">
-          <WelcomePage />
-        </Route> }
-        <Route path='*'>
-          Page Not Found
-        </Route>
+        {isLoggedIn && (
+          <Route path="/Welcomepage" exact>
+            <WelcomePage />
+          </Route>
+        )}
+        {isLoggedIn && (
+          <Route path="/Welcomepage/profile">
+            <ProfilePage />
+          </Route>
+        )}
+
+        <Route path="*">Page Not Found</Route>
       </Switch>
     </React.Fragment>
   );
