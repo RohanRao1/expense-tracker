@@ -1,11 +1,14 @@
-import react, { Fragment, useContext } from 'react'
+import  { Fragment, useContext, useState } from 'react'
 import classes from './Welcome.module.css'
 import {useHistory} from 'react-router-dom'
 import AuthContext from '../auth/AuthContext'
+import ExpenseForm from '../expenses/ExpenseForm'
+import ExpenseList from '../expenses/ExpenseList'
 
 const WelcomePage = () => {
   const history = useHistory()
   const authctx = useContext(AuthContext)
+  const [items, setItems] = useState([])
 
   const routeChange = () => {
     history.push("/Welcomepage/profile");
@@ -49,6 +52,11 @@ const WelcomePage = () => {
       history.replace('/login')
     }
 
+    const saveExpenseDataHandler = (expense) => {
+      setItems( prev => [...prev, expense])
+    }
+
+
     return (
       <Fragment>
         <div className={classes.header}>
@@ -57,6 +65,8 @@ const WelcomePage = () => {
           <button onClick={logoutHandler} className={classes.logout}>Logout</button>
           <span>Your Profile is Incomplete. <button onClick={routeChange}>Complete now</button></span>
         </div>
+        <ExpenseForm onSaveData={saveExpenseDataHandler} />
+        <ExpenseList items={items} />
       </Fragment>
     );
 }
