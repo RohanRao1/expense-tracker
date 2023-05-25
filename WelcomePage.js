@@ -44,11 +44,17 @@ const WelcomePage = () => {
   }
 
 
+    const logoutHandler = () => {
+      authctx.logout()
+      history.replace('/login')
+    }
+
     return (
       <Fragment>
         <div className={classes.header}>
           <h4>Welcome to Expense Tracker !!!</h4>
           <button onClick={verification} className={classes.email}>Verify Email</button>
+          <button onClick={logoutHandler} className={classes.logout}>Logout</button>
           <span>Your Profile is Incomplete. <button onClick={routeChange}>Complete now</button></span>
         </div>
       </Fragment>
