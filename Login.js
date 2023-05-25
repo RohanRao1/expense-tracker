@@ -44,9 +44,9 @@ const Login = () => {
             return res.json().then((data) => alert(data.error.message));
           }
         }).then(data => {
-            console.log(data)
-            authctx.login(data.idToken)
-            history.replace('/welcomepage')
+            if(data){
+            authctx.login(data.idToken, data.email)
+            history.replace('/welcomepage')}
         })
     }
     else {
@@ -77,9 +77,13 @@ const Login = () => {
 
   }
 
+  const resetPassword = () => {
+    history.push('/resetpassword')
+  }
+
   return (
     <Fragment>
-      <form className={classes.form} onSubmit={submitHandler}>
+      <form className={classes.form} onSubmit={submitHandler} >
         <h1>{isLogin ? 'LOGIN' : 'SIGNUP'}</h1>
         <label htmlFor="email">Email</label>
         <input type="email" id="email" ref={emailInputRef} required />
@@ -88,6 +92,9 @@ const Login = () => {
         <label htmlFor="cpassword">Confirm Password</label>
         <input type="password" id="cpassword" required ref={cPasswordInputRef} />
         {loading ? 'Loading...' : <button type="submit">{isLogin ? "Log In" : 'Sign Up'}</button> }
+        <div className={classes.actions}>
+        {isLogin &&  <button type="button" className={classes.pwd} onClick={resetPassword}>Forgot Password??</button> }
+        </div>
         <div className={classes.actions}>
           <button type="button" className={classes.toggle} onClick={toggle}>{isLogin ? 'Create New Account' : 'Login To Existing Account'}</button>
         </div>

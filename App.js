@@ -5,6 +5,7 @@ import WelcomePage from "./components/pages/WelcomePage";
 import { Route, Switch, Redirect } from "react-router-dom";
 import AuthContext from "./components/auth/AuthContext";
 import ProfilePage from "./components/pages/ProfilePage";
+import ResetPassword from "./components/pages/ResetPassword";
 
 function App() {
   const authctx = useContext(AuthContext)
@@ -30,7 +31,9 @@ function App() {
             <ProfilePage />
           </Route>
         )}
-
+        <Route path='/resetpassword'>
+          <ResetPassword />
+        </Route>
         <Route path="*">Page Not Found</Route>
       </Switch>
     </React.Fragment>
