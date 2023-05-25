@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useContext } from "react";
+import React, { Fragment, useRef, useContext, useEffect } from "react";
 import classes from './ProfilePage.module.css'
 import AuthContext from "../auth/AuthContext";
 
@@ -6,6 +6,8 @@ const ProfilePage = () => {
   const nameRef = useRef()
   const urlRef = useRef()
   const authctx = useContext(AuthContext)
+
+
 
   const submitHandler = event => {
     event.preventDefault()
@@ -36,10 +38,43 @@ const ProfilePage = () => {
         })
       }
     }).then(data => {
-      console.log('received data ',data)
+      // console.log('received data ',data)
     }).catch(err=> console.log(err))
 
+  } 
+
+
+  const getData = () => {
+    fetch(
+      "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAVljULb5wx1pjS6nACVu-88E3ybtM49vo",
+      {
+        method: "POST",
+        body: JSON.stringify({ idToken: authctx.token }),
+      }
+    )
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          return res.json().then((data) => {
+            console.log(data);
+            if (data.error.message) {
+              alert(data.error.message);
+            }
+          });
+        }
+      })
+      .then((data) => {
+        console.log("received data ", data);
+       if (data.users) {
+        nameRef.current.value = data.users[0].displayName
+        urlRef.current.value = data.users[0].photoUrl;
+       }
+      })
+      .catch((err) => console.log(err));
   }
+
+  useEffect( getData , [])
 
 
     return (
