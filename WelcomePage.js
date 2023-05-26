@@ -9,6 +9,7 @@ const WelcomePage = () => {
   const history = useHistory()
   const authctx = useContext(AuthContext)
   const [items, setItems] = useState([])
+  const [editId, setEditId ] = useState(null)
 
   const routeChange = () => {
     history.push("/Welcomepage/profile");
@@ -82,6 +83,21 @@ const WelcomePage = () => {
 useEffect(() => {
   getExpense()
 },[getExpense])
+
+const deleteHandler = id => {
+  console.log('received', id)
+
+  setItems(prev => {
+    const updatedExpense = prev.filter(item => item.id !== id)
+    return updatedExpense
+  })
+}
+
+const editHandler = id => {
+  console.log('received editing id ',id)
+  setEditId(id)
+
+}
   
 
     return (
@@ -92,8 +108,8 @@ useEffect(() => {
           <button onClick={logoutHandler} className={classes.logout}>Logout</button>
           <span>Your Profile is Incomplete. <button onClick={routeChange}>Complete now</button></span>
         </div>
-        <ExpenseForm onSaveData={saveExpenseDataHandler} />
-        <ExpenseList items={items} />
+        <ExpenseForm onSaveData={saveExpenseDataHandler} editingId={editId} items={items} />
+        <ExpenseList items={items} onDelete={deleteHandler} onEdit={editHandler} />
       </Fragment>
     );
 }
