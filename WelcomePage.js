@@ -1,4 +1,4 @@
-import  { Fragment, useContext, useState } from 'react'
+import  { Fragment, useCallback, useContext, useEffect, useState } from 'react'
 import classes from './Welcome.module.css'
 import {useHistory} from 'react-router-dom'
 import AuthContext from '../auth/AuthContext'
@@ -53,9 +53,36 @@ const WelcomePage = () => {
     }
 
     const saveExpenseDataHandler = (expense) => {
-      setItems( prev => [...prev, expense])
+      setItems( prev => [expense, ...prev])
     }
 
+    const getExpense = useCallback(async() => {
+      const response = await fetch(
+        "https://expensetracker-b4569-default-rtdb.firebaseio.com/expenses.json"
+      )
+      const data = await response.json()
+      console.log(data)
+
+      const loadedExpenses = []
+
+      for (const key in data) {
+        loadedExpenses.push({
+          id : key,
+          amount : data[key].amount,
+          description : data[key].description,
+          category : data[key].category
+        })
+      }
+
+      setItems(loadedExpenses)
+      
+    },[])
+
+
+useEffect(() => {
+  getExpense()
+},[getExpense])
+  
 
     return (
       <Fragment>

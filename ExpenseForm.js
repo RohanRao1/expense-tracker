@@ -6,7 +6,7 @@ const ExpenseForm = (props) => {
     const inputDesc = useRef()
     const inputCat = useRef()
 
-    const submitHandler = event => {
+    const submitHandler = async(event) => {
         event.preventDefault()
 
         const enteredPrice = inputPrice.current.value
@@ -19,7 +19,19 @@ const ExpenseForm = (props) => {
             category : enteredCat
         }
 
-        props.onSaveData(obj)
+         props.onSaveData(obj);
+
+        const response = await fetch("https://expensetracker-b4569-default-rtdb.firebaseio.com/expenses.json",{
+          method : 'POST',
+          body : JSON.stringify(obj),
+          headers : {
+            'Content-Type' : 'application/json'
+          }
+        })
+        
+        const data =await response.json()
+        console.log(data)
+
     }
 
     return (
@@ -33,7 +45,7 @@ const ExpenseForm = (props) => {
           <select id="cat" ref={inputCat}>
             <option value="food">Food</option>
             <option value="electricity">Electricity</option>
-            <option value="petrol">Petrol</option>
+            <option value="fuel">Fuel</option>
             <option value="salary">Salary</option>
           </select>
           <button>Add Expense</button>
