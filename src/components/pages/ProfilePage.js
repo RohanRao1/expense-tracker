@@ -1,6 +1,6 @@
 import React, { Fragment, useRef, useContext, useEffect } from "react";
 import classes from './ProfilePage.module.css'
-import AuthContext from "../auth/AuthContext";
+// import AuthContext from "../auth/AuthContext";
 import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
@@ -9,6 +9,7 @@ const ProfilePage = () => {
   // const authctx = useContext(AuthContext)
 
 const token = useSelector(state => state.authentication.token)
+console.log('token is ', token)
 
   const submitHandler = event => {
     event.preventDefault()
@@ -77,6 +78,8 @@ const token = useSelector(state => state.authentication.token)
       })  
       .catch((err) => console.log(err));
   }
+
+
 
   useEffect( getData , [])
 

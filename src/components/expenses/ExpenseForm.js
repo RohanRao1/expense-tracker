@@ -5,7 +5,7 @@ const ExpenseForm = (props) => {
   const inputPrice = useRef();
   const inputDesc = useRef();
   const inputCat = useRef();
-  const [expenses, setExpense] = useState([])
+  // const [expenses, setExpense] = useState([])
 
   useEffect(() => {
     
@@ -70,7 +70,7 @@ const ExpenseForm = (props) => {
   console.log(err)
  }
     
- setExpense([...expenses, expense])
+//  setExpense([...expenses, expense])
  window.location.reload()
 
 

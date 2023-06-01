@@ -6,16 +6,19 @@ import ExpenseForm from '../expenses/ExpenseForm'
 import ExpenseList from '../expenses/ExpenseList'
 import { useDispatch, useSelector } from 'react-redux'
 import { authActions } from '../../store/authentication'
+import { expenseActions } from '../../store/expenses'
+import { saveAs } from "file-saver";
 
 const WelcomePage = () => {
   const history = useHistory()
-  // const authctx = useContext(AuthContext)
-  const [items, setItems] = useState([])
-  const [editItem, setEditItem ] = useState(null)
   
+  const [editItem, setEditItem ] = useState(null)
+  const receivedData = useSelector(state => state.expense?.data)
 
   const dispatch = useDispatch()
   const token = useSelector(state => state.authentication.token)
+  const premium = useSelector(state => state.expense?.showPremium)
+  let [isPremiumClicked, setIsPremiumClicked] = useState(false);
 
   const routeChange = () => {
     history.push("/Welcomepage/profile");
@@ -57,65 +60,92 @@ const WelcomePage = () => {
     const logoutHandler = () => {
       // authctx.logout()
       dispatch(authActions.logout())
+      localStorage.removeItem("darktheme");
+      localStorage.removeItem("isPremiumClicked");
       history.replace('/login')
     }
 
-    // const saveExpenseDataHandler = (expense) => {
-    //   setItems( prev => [...prev, expense])
-    // }
-
-//     const getExpense = useCallback(async() => {
-//       const response = await fetch(
-//         "https://expensetracker-b4569-default-rtdb.firebaseio.com/expenses.json"
-//       )
-//       const data = await response.json()
-//       console.log(data)
-
-//       const loadedExpenses = []
-
-//       for (const key in data) {
-//         loadedExpenses.push({
-//           id : key,
-//           amount : data[key].amount,
-//           description : data[key].description,
-//           category : data[key].category
-//         })
-//       }
-
-//       setItems(loadedExpenses)
-      
-//     },[])
-//     console.log('items present', items)
-
-// useEffect(() => {
-//   getExpense()
-// },[getExpense])
-
-// const deleteHandler = id => {
-//   console.log('received', id)
-
-//   setItems(prev => {
-//     const updatedExpense = prev.filter(item => item.id !== id)
-//     return updatedExpense
-//   })
-// }
 
 const editHandler = item => {
   console.log('received editing id ',item)
   setEditItem(item)
 }
   
+const changeToDark = () => {
+  dispatch(expenseActions.toggle())
+}
+
+const downloadFile = () => {
+  const csv =
+      "Category,Description,Amount\n" +
+      Object.values(receivedData)
+        .map(
+          ({ category, description, amount }) =>
+            `${category},${description},${amount}`
+        )
+        .join("\n");
+
+    // Create a new blob with the CSV data
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+
+    // Save the blob as a file with the name "expenses.csv"
+    saveAs(blob, "expenses.csv")
+}
+
+
+useEffect(() => {
+  const premiumClickedStatus = localStorage.getItem("isPremiumClicked");
+  if (premiumClickedStatus) {
+    setIsPremiumClicked(JSON.parse(premiumClickedStatus));
+  }
+}, []);
+
+useEffect(() => {
+  localStorage.setItem("isPremiumClicked", JSON.stringify(isPremiumClicked));
+}, [isPremiumClicked]);
+
+
+
+const activatePremium = () => {
+  localStorage.setItem('isPremiumClicked', true)
+  window.location.reload()
+}
+
+
 
     return (
       <Fragment>
         <div className={classes.header}>
           <h4>Welcome to Expense Tracker !!!</h4>
-          <button onClick={verification} className={classes.email}>Verify Email</button>
-          <button onClick={logoutHandler} className={classes.logout}>Logout</button>
-          <span>Your Profile is Incomplete. <button onClick={routeChange}>Complete now</button></span> 
+          <button onClick={verification} className={classes.email}>
+            Verify Email
+          </button>
+          {premium &&  (
+            <button className={classes.premium} onClick={activatePremium}>
+              Activate premium
+            </button>
+          )}
+          <button onClick={logoutHandler} className={classes.logout}>
+            Logout
+          </button>
+          <span> 
+            Your Profile is Incomplete
+            <button onClick={routeChange}>Complete now</button>
+          </span>
+          {console.log("asdf ", premium, isPremiumClicked)}
+          {premium && isPremiumClicked && (
+            <button className={classes.toggle} onClick={changeToDark}>
+              Toggle dark/light Theme
+            </button>
+          )}
+          {premium && isPremiumClicked && (
+            <button className={classes.download} onClick={downloadFile}>
+              Download Expense
+            </button>
+          )}
         </div>
         <ExpenseForm editItem={editItem} />
-        <ExpenseList onEdit={editHandler}  />
+        <ExpenseList onEdit={editHandler} />
       </Fragment>
     );
 }

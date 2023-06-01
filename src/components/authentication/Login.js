@@ -24,35 +24,48 @@ const Login = () => {
     event.preventDefault()
     const enteredEmail = emailInputRef.current.value
     const enteredPassword = passwordInputRef.current.value
+    const cpassword = cPasswordInputRef.current.value
     setLoading(true)
+
     if (isLogin){
-        fetch(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAVljULb5wx1pjS6nACVu-88E3ybtM49vo",
-          {
-            method: "POST",
-            body: JSON.stringify({
-              email: enteredEmail,
-              password: enteredPassword,
-              returnSecureToken: true,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        ).then((res) => {
-          setLoading(false);
-          console.log(res);
-          if (res.ok) {
-            return res.json();
-          } else {
-            return res.json().then((data) => alert(data.error.message));
-          }
-        }).then(data => {
-            if(data){
-            // authctx.login(data.idToken, data.email)
-              dispatch(authActions.login({token : data.idToken, email : data.email}))
-            history.replace('/welcomepage')}
-        })
+      if (enteredPassword === cpassword) {
+         fetch(
+           "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAVljULb5wx1pjS6nACVu-88E3ybtM49vo",
+           {
+             method: "POST",
+             body: JSON.stringify({
+               email: enteredEmail,
+               password: enteredPassword,
+               returnSecureToken: true,
+             }),
+             headers: {
+               "Content-Type": "application/json",
+             },
+           }
+         )
+           .then((res) => {
+             setLoading(false);
+             console.log(res);
+             if (res.ok) {
+               return res.json();
+             } else {
+               return res.json().then((data) => alert(data.error.message));
+             }
+           })
+           .then((data) => {
+             if (data) {
+               // authctx.login(data.idToken, data.email)
+               dispatch(
+                 authActions.login({ token: data.idToken, email: data.email })
+               );
+               history.replace("/welcomepage");
+             }
+           });
+      }
+       else {
+        alert('incorrect password')
+        setLoading(false)
+       }
     }
     else {
          fetch(
