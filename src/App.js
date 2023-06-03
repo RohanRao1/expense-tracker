@@ -1,43 +1,54 @@
-import "./App.css";
-import React, { useContext } from "react";
-import Login from "./components/authentication/Login";
-import WelcomePage from "./components/pages/WelcomePage";
-import { Route, Switch, Redirect } from "react-router-dom";
-import AuthContext from "./components/auth/AuthContext";
-import ProfilePage from "./components/pages/ProfilePage";
-import ResetPassword from "./components/pages/ResetPassword";
-import { useSelector } from "react-redux";
+import Cart from "./components/Cart/Cart";
+import Layout from "./components/Layout/Layout";
+import Products from "./components/Shop/Products";
+import { useSelector, useDispatch } from "react-redux";
+import { Fragment, useEffect } from "react";
+// import { uiActions } from "./store/ui-slice";
+import Notification from "./components/UI/Notification";
+import { sendCartData } from "./store/cart-actions";
+import { fetchCartData } from "./store/cart-actions";
+
+
+let initial = true;
 
 function App() {
-  // const authctx = useContext(AuthContext)
+  const show = useSelector((state) => state.ui.cartIsVisible);
+  const cart = useSelector((state) => state.cart);
+  console.log(cart);
+  const dispatch = useDispatch();
+  const notification = useSelector((state) => state.ui.notification);
 
-  const isLoggedIn = useSelector(state => state.authentication.isAuthenticated)
-  
+  useEffect(() => {
+    dispatch(fetchCartData())
+  }, [dispatch])
+
+
+  useEffect(() => {
+     if(initial) {
+      initial = false
+      return
+    }
+
+     if(cart.changed)
+     { dispatch(sendCartData(cart)) }
+   
+
+  }, [cart, dispatch]);
+
   return (
-    <React.Fragment>
-      <Switch>
-        <Route path="/" exact>
-          <Redirect to="/login" />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        {isLoggedIn && (
-          <Route path="/Welcomepage" exact>
-            <WelcomePage />
-          </Route>
-        )}
-        {isLoggedIn && (
-          <Route path="/Welcomepage/profile">
-            <ProfilePage />
-          </Route>
-        )}
-        <Route path='/resetpassword'>
-          <ResetPassword />
-        </Route>
-        <Route path="*">Page Not Found</Route>
-      </Switch>
-    </React.Fragment>
+    <Fragment>
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
+      <Layout >
+        {show && <Cart />}
+        <Products />
+      </Layout>
+    </Fragment>
   );
 }
 
